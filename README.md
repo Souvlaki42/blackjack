@@ -9,4 +9,3 @@ Knowable plans:
 * I already know there is a quite rare bug in which your total sum is different than the displayed cards sum <br> 
 * I'm still in search of a better background image <br>
 * I'm planning to add bets and poker chips later <br>
-Thanks in advance! <br>
