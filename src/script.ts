@@ -85,14 +85,12 @@ function shuffleDeck() {
 }
 
 function startGame(elements: Elements) {
-	const { dealerCards, yourCards, hitBtn, stayBtn } = elements;
+	const { dealerCards, yourCards, hitBtn, stayBtn, hiddenCard } = elements;
 
 	hidden = deck.pop();
 	if (!hidden) return;
 
-	const hiddenImg = document.createElement("img");
-	hiddenImg.src = `/cards/B-${hidden.split("-")[1]}.png`;
-	dealerCards.append(hiddenImg);
+	hiddenCard.src = `/cards/B-${hidden.split("-")[1]}.png`;
 
 	dealerSum += getValue(hidden);
 	dealerAceCount += checkAce(hidden);
