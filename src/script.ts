@@ -8,26 +8,41 @@ let hidden: string | undefined;
 let deck: string[];
 
 let canHit: boolean = true;
+let canRestart: boolean = true;
 
 interface Elements {
 	dealerCards: HTMLDivElement;
 	yourCards: HTMLDivElement;
 	hitBtn: HTMLButtonElement;
 	stayBtn: HTMLButtonElement;
+	restartBtn: HTMLButtonElement;
 	hiddenCard: HTMLImageElement;
-	resultsText: HTMLParagraphElement;
+	resultsText: HTMLHeadingElement;
 	dealerSumText: HTMLSpanElement;
 	yourSumText: HTMLSpanElement;
 }
 
-window.addEventListener("load", () => {
+window.addEventListener("load", initGame);
+
+function initGame() {
+	if (!canRestart) return;
 	console.clear();
+
+	dealerSum = 0;
+	yourSum = 0;
+	dealerAceCount = 0;
+	yourAceCount = 0;
+	hidden = undefined;
+	deck = [];
+	canHit = true;
+	canRestart = false;
 
 	const elements = {
 		dealerCards: document.querySelector("#dealer-cards"),
 		yourCards: document.querySelector("#your-cards"),
 		hitBtn: document.querySelector("#hit"),
 		stayBtn: document.querySelector("#stay"),
+		restartBtn: document.querySelector("#restart"),
 		hiddenCard: document.querySelector("#hidden"),
 		resultsText: document.querySelector("#results"),
 		dealerSumText: document.querySelector("#dealer-sum"),
@@ -46,10 +61,22 @@ window.addEventListener("load", () => {
 			"One or more of the required ui elements is currenly undefined!"
 		);
 
+	const { dealerSumText, yourSumText, resultsText, dealerCards, yourCards } = elements;
+
+	dealerSumText.innerText = "0";
+	yourSumText.innerText = "0";
+	resultsText.innerText = "";
+
+	Array.from(dealerCards.children).forEach(child => {
+		if (child.id !== "hidden") dealerCards.removeChild(child);
+	});
+
+	Array.from(yourCards.children).forEach(child => yourCards.removeChild(child));
+
 	buildDeck();
 	shuffleDeck();
 	startGame(elements);
-});
+}
 
 function buildDeck() {
 	const values = [
@@ -85,7 +112,8 @@ function shuffleDeck() {
 }
 
 function startGame(elements: Elements) {
-	const { dealerCards, yourCards, hitBtn, stayBtn, hiddenCard } = elements;
+	const { dealerCards, yourCards, hitBtn, stayBtn, restartBtn, hiddenCard } =
+		elements;
 
 	hidden = deck.pop();
 	if (!hidden) return;
@@ -117,6 +145,7 @@ function startGame(elements: Elements) {
 
 	hitBtn.addEventListener("click", () => hit(elements));
 	stayBtn.addEventListener("click", () => stay(elements));
+	restartBtn.addEventListener("click", () => initGame());
 }
 
 function hit(elements: Elements) {
@@ -153,6 +182,8 @@ function stay(elements: Elements) {
 	yourSumText.innerText = yourSum.toString();
 	resultsText.innerText = message;
 
+	canRestart = true;
+
 	console.log("------- Open for debuging purposes! ------");
 	console.log(`Dealer's sum: ${dealerSum}`);
 	console.log(`Your sum: ${yourSum}`);
@@ -180,4 +211,3 @@ function reduceAce(playerSum: number, playerAceCount: number) {
 	}
 	return playerSum;
 }
-
