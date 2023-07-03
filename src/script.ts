@@ -21,46 +21,34 @@ interface Elements {
 }
 
 window.addEventListener("load", () => {
+	console.clear();
 
-  console.clear();
+	const elements = {
+		dealerCards: document.querySelector("#dealer-cards"),
+		yourCards: document.querySelector("#your-cards"),
+		hitBtn: document.querySelector("#hit"),
+		stayBtn: document.querySelector("#stay"),
+		hiddenCard: document.querySelector("#hidden"),
+		resultsText: document.querySelector("#results"),
+		dealerSumText: document.querySelector("#dealer-sum"),
+		yourSumText: document.querySelector("#your-sum"),
+	} as Elements;
 
-	const dealerCards = document.querySelector("#dealer-cards");
-	const yourCards = document.querySelector("#your-cards");
-	const hitBtn = document.querySelector("#hit");
-	const stayBtn = document.querySelector("#stay");
-	const hiddenCard = document.querySelector("#hidden");
-	const resultsText = document.querySelector("#results");
-	const dealerSumText = document.querySelector("#dealer-sum");
-	const yourSumText = document.querySelector("#your-sum");
+	let areElementsDefined: boolean = true;
 
-	if (
-		!dealerCards ||
-		!yourCards ||
-		!hitBtn ||
-		!stayBtn ||
-		!hiddenCard ||
-		!resultsText ||
-		!dealerSumText ||
-		!yourSumText
-	) {
-		console.error(
+	for (const key in elements) {
+		if (!elements[key as keyof Elements]) areElementsDefined = false;
+		break;
+	}
+
+	if (!areElementsDefined)
+		return console.error(
 			"One or more of the required ui elements is currenly undefined!"
 		);
-		return;
-	}
 
 	buildDeck();
 	shuffleDeck();
-	startGame({
-		dealerCards,
-		yourCards,
-		hitBtn,
-		stayBtn,
-		hiddenCard,
-		resultsText,
-		dealerSumText,
-		yourSumText,
-	} as Elements);
+	startGame(elements);
 });
 
 function buildDeck() {
@@ -115,8 +103,6 @@ function startGame(elements: Elements) {
 		dealerCards.append(cardImg);
 	}
 
-	// console.log(dealerSum);
-
 	for (let i = 0; i < 2; i++) {
 		const cardImg = document.createElement("img");
 		const card = deck.pop();
@@ -126,8 +112,6 @@ function startGame(elements: Elements) {
 		yourAceCount += checkAce(card);
 		yourCards.append(cardImg);
 	}
-
-	// console.log(yourSum);
 
 	hitBtn.addEventListener("click", () => hit(elements));
 	stayBtn.addEventListener("click", () => stay(elements));
