@@ -3,25 +3,13 @@ body {
   text-align: center;
 }
 
-#dealer-cards img {
-  height: 175px;
-  width: 125px;
-  margin: 1px;
+.cards img {
+  height: 138px;
+  width: 108px;
+  margin: 5px;
 }
 
-#your-cards img {
-  height: 175px;
-  width: 125px;
-  margin: 1px;
-}
-
-#hit {
-  width: 100px;
-  height: 50px;
-  font-size: 20px;
-}
-
-#stay {
+.btn {
   width: 100px;
   height: 50px;
   font-size: 20px;

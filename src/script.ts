@@ -90,6 +90,10 @@ function startGame(elements: Elements) {
 	hidden = deck.pop();
 	if (!hidden) return;
 
+	const hiddenImg = document.createElement("img");
+	hiddenImg.src = `/cards/B-${hidden.split("-")[1]}.png`;
+	dealerCards.append(hiddenImg);
+
 	dealerSum += getValue(hidden);
 	dealerAceCount += checkAce(hidden);
 
