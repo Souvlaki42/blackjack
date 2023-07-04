@@ -171,8 +171,8 @@ function stay(elements: Elements) {
 	hiddenCard.src = `/cards/${hidden}.png`;
 
 	let message = "";
-	if (yourSum > 21) message = "You lose!";
-	else if (dealerSum > 21) message = "You win!";
+	if (yourSum > 21 && yourSum != dealerSum) message = "You lose!";
+	else if (dealerSum > 21 && yourSum != dealerSum ) message = "You win!";
 	else if (yourSum === dealerSum) message = "Tie!";
 	else if (yourSum > dealerSum) message = "You win!";
 	else if (yourSum < dealerSum) message = "You lose!";
