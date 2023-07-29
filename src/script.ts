@@ -14,6 +14,7 @@ interface Elements {
 	yourCards: HTMLDivElement;
 	hitBtn: HTMLButtonElement;
 	stayBtn: HTMLButtonElement;
+	restartBtn: HTMLButtonElement;
 	hiddenCard: HTMLImageElement;
 	resultsText: HTMLHeadingElement;
 	dealerSumText: HTMLSpanElement;
@@ -26,13 +27,16 @@ window.addEventListener("load", () => {
 		yourCards: document.querySelector("#your-cards"),
 		hitBtn: document.querySelector("#hit"),
 		stayBtn: document.querySelector("#stay"),
+		restartBtn: document.querySelector("#restart"),
 		hiddenCard: document.querySelector("#hidden"),
 		resultsText: document.querySelector("#results"),
 		dealerSumText: document.querySelector("#dealer-sum"),
 		yourSumText: document.querySelector("#your-sum"),
 	} as Elements;
 
-	const elementsUndefined = Object.values(elements).some((element: keyof Elements) => element == undefined || element == null);
+	const elementsUndefined = Object.values(elements).some(
+		(element: keyof Elements) => element == undefined || element == null
+	);
 
 	if (elementsUndefined)
 		return console.error(
@@ -78,7 +82,8 @@ function shuffleDeck() {
 }
 
 function startGame(elements: Elements) {
-	const { dealerCards, yourCards, hitBtn, stayBtn, hiddenCard } = elements;
+	const { dealerCards, yourCards, hitBtn, stayBtn, hiddenCard } =
+		elements;
 
 	hidden = deck.pop();
 	if (!hidden) return;
@@ -127,7 +132,9 @@ function hit(elements: Elements) {
 }
 
 function stay(elements: Elements) {
-	const { hiddenCard, resultsText, dealerSumText, yourSumText } = elements;
+	const { hiddenCard, resultsText, dealerSumText, yourSumText, restartBtn } = elements;
+
+	restartBtn.addEventListener("click", () => location.reload());
 	dealerSum = reduceAce(dealerSum, dealerAceCount);
 	yourSum = reduceAce(yourSum, yourAceCount);
 
