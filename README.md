@@ -4,12 +4,12 @@ This project just started from [this tutorial](https://youtu.be/bMYCWccL-3U) and
 
 Credits:
 
-- Card sprites are from [open game art](https://opengameart.org/content/cards-set)
-- The favicon is from [Poker icons created by Freepik - Flaticon](https://www.flaticon.com/free-icon/clover_105219) <br>
-- <a href="https://www.freepik.com/free-vector/green-casino-poker-table-texture-game-background_48197468.htm#query=blackjack%20background&position=3&from_view=keyword&track=ais&uuid=93f4abdc-ca0c-464c-880d-444414d7e88b">New background image by upklyak</a> on Freepik <br>
+- Card sprites are from [open game art](https://opengameart.org/content/cards-set).
+- The favicon is from [Poker icons created by Freepik - Flaticon](https://www.flaticon.com/free-icon/clover_105219).
+- <a href="https://www.freepik.com/free-vector/green-casino-poker-table-texture-game-background_48197468.htm#query=blackjack%20background&position=3&from_view=keyword&track=ais&uuid=93f4abdc-ca0c-464c-880d-444414d7e88b">New background image by upklyak</a> on Freepik.
+- Special thanks to [Delta](https://github.com/delta911ee) for his bug fixes.
 
-This game is almost done while still in development so any issues or pull requests you can create are welcome.<br>
-(Special thanks to [Delta](https://github.com/delta911ee) for his bug fixes.)<br>
+This game is almost done while still in development so any issues or pull requests you can create are welcome. Thanks in advance.<br>
 
 Future plans:
 
