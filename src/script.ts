@@ -5,50 +5,19 @@ let dealerAceCount: number = 0;
 let yourAceCount: number = 0;
 
 let hidden: string | undefined;
-let deck: string[];
 
 let canHit: boolean = true;
 
-interface Elements {
-	dealerCards: HTMLDivElement;
-	yourCards: HTMLDivElement;
-	hitBtn: HTMLButtonElement;
-	stayBtn: HTMLButtonElement;
-	restartBtn: HTMLButtonElement;
-	hiddenCard: HTMLImageElement;
-	resultsText: HTMLHeadingElement;
-	dealerSumText: HTMLSpanElement;
-	yourSumText: HTMLSpanElement;
+function checkElement<T extends HTMLElement>(selector: string): T {
+	const element = document.querySelector(selector);
+	if (!element)
+		throw new Error(
+			`Element with selector ${selector} is not currenly defined in the page!`
+		);
+	else return element as T;
 }
 
-window.addEventListener("load", () => {
-	const elements = {
-		dealerCards: document.querySelector("#dealer-cards"),
-		yourCards: document.querySelector("#your-cards"),
-		hitBtn: document.querySelector("#hit"),
-		stayBtn: document.querySelector("#stay"),
-		restartBtn: document.querySelector("#restart"),
-		hiddenCard: document.querySelector("#hidden"),
-		resultsText: document.querySelector("#results"),
-		dealerSumText: document.querySelector("#dealer-sum"),
-		yourSumText: document.querySelector("#your-sum"),
-	} as Elements;
-
-	const elementsUndefined = Object.values(elements).some(
-		(element: keyof Elements) => element == undefined || element == null
-	);
-
-	if (elementsUndefined)
-		return console.error(
-			"One or more of the required ui elements is currenly undefined!"
-		);
-
-	buildDeck();
-	shuffleDeck();
-	startGame(elements);
-});
-
-function buildDeck() {
+function buildDeck(): string[] {
 	const values = [
 		"A",
 		"2",
@@ -65,25 +34,77 @@ function buildDeck() {
 		"K",
 	];
 	const types = ["C", "D", "H", "S"];
-	deck = [];
+	const deck: string[] = [];
 
 	types.forEach((type) =>
 		values.forEach((value) => deck.push(`${value}-${type}`))
 	);
+	return deck;
 }
 
-function shuffleDeck() {
+function shuffleDeck(deck: string[]): string[] {
 	for (let i = 0; i < deck.length; i++) {
 		const j = Math.floor(Math.random() * deck.length);
 		const temp = deck[i];
 		deck[i] = deck[j];
 		deck[j] = temp;
 	}
+	return deck;
 }
 
-function startGame(elements: Elements) {
-	const { dealerCards, yourCards, hitBtn, stayBtn, hiddenCard } =
-		elements;
+function reduceAce(playerSum: number, playerAceCount: number): number {
+	while (playerSum > 21 && playerAceCount > 0) {
+		playerSum -= 10;
+		playerAceCount -= 1;
+	}
+	return playerSum;
+}
+
+function checkAce(card: string): boolean {
+	if (card[0] === "A") return true;
+	return false;
+}
+
+function getValue(card: string): number {
+	const data = card?.split("-");
+	const value = data[0];
+	if (isNaN(Number(value))) {
+		if (value === "A") return 11;
+		return 10;
+	}
+	return Number(value);
+}
+
+function calculateAndShowSums(hidden: string, dealerSumHidden: boolean = true) {
+	yourSum = reduceAce(yourSum, yourAceCount);
+	dealerSum = reduceAce(
+		dealerSum - (dealerSumHidden ? getValue(hidden) : 0),
+		dealerAceCount - (dealerSumHidden && checkAce(hidden) ? 1 : 0)
+	);
+	elements.yourSumText.innerText = yourSum.toString();
+	elements.dealerSumText.innerText =
+		dealerSum.toString() + (dealerSumHidden ? " + Hidden" : "");
+}
+
+const elements = {
+	dealerCards: checkElement<HTMLDivElement>("#dealer-cards"),
+	yourCards: checkElement<HTMLDivElement>("#your-cards"),
+	hitBtn: checkElement<HTMLButtonElement>("#hit"),
+	stayBtn: checkElement<HTMLButtonElement>("#stay"),
+	restartBtn: checkElement<HTMLButtonElement>("#restart"),
+	hiddenCard: checkElement<HTMLImageElement>("#hidden"),
+	resultsText: checkElement<HTMLHeadingElement>("#results"),
+	dealerSumText: checkElement<HTMLSpanElement>("#dealer-sum"),
+	yourSumText: checkElement<HTMLSpanElement>("#your-sum"),
+};
+
+window.addEventListener("load", startGame);
+
+function startGame() {
+	const { dealerCards, yourCards, hitBtn, stayBtn, hiddenCard } = elements;
+
+	let deck: string[] = buildDeck();
+	deck = shuffleDeck(deck);
 
 	hidden = deck.pop();
 	if (!hidden) return;
@@ -91,7 +112,7 @@ function startGame(elements: Elements) {
 	hiddenCard.src = `/cards/B-${hidden.split("-")[1]}.png`;
 
 	dealerSum += getValue(hidden);
-	dealerAceCount += checkAce(hidden);
+	dealerAceCount += checkAce(hidden) ? 1 : 0;
 
 	while (dealerSum < 17) {
 		const cardImg = document.createElement("img");
@@ -99,7 +120,7 @@ function startGame(elements: Elements) {
 		cardImg.src = `/cards/${card}.png`;
 		if (!card) return;
 		dealerSum += getValue(card);
-		dealerAceCount += checkAce(card);
+		dealerAceCount += checkAce(card) ? 1 : 0;
 		dealerCards.append(cardImg);
 	}
 
@@ -109,15 +130,17 @@ function startGame(elements: Elements) {
 		cardImg.src = `/cards/${card}.png`;
 		if (!card) return;
 		yourSum += getValue(card);
-		yourAceCount += checkAce(card);
+		yourAceCount += checkAce(card) ? 1 : 0;
 		yourCards.append(cardImg);
 	}
 
-	hitBtn.addEventListener("click", () => hit(elements));
-	stayBtn.addEventListener("click", () => stay(elements));
+	calculateAndShowSums(hidden);
+
+	hitBtn.addEventListener("click", () => hit(deck));
+	stayBtn.addEventListener("click", stay);
 }
 
-function hit(elements: Elements) {
+function hit(deck: string[]) {
 	if (!canHit) return;
 	const { yourCards } = elements;
 	const cardImg = document.createElement("img");
@@ -125,18 +148,20 @@ function hit(elements: Elements) {
 	cardImg.src = `/cards/${card}.png`;
 	if (!card) return;
 	yourSum += getValue(card);
-	yourAceCount += checkAce(card);
+	yourAceCount += checkAce(card) ? 1 : 0;
 	yourCards.append(cardImg);
 
-	if (reduceAce(yourSum, yourAceCount) > 21) canHit = false;
+	calculateAndShowSums(hidden ?? "");
+
+	if (yourSum > 21) canHit = false;
 }
 
-function stay(elements: Elements) {
-	const { hiddenCard, resultsText, dealerSumText, yourSumText, restartBtn } = elements;
+function stay() {
+	const { hiddenCard, resultsText, restartBtn } = elements;
 
 	restartBtn.addEventListener("click", () => location.reload());
-	dealerSum = reduceAce(dealerSum, dealerAceCount);
-	yourSum = reduceAce(yourSum, yourAceCount);
+
+	calculateAndShowSums(hidden ?? "", false);
 
 	canHit = false;
 	hiddenCard.src = `/cards/${hidden}.png`;
@@ -149,34 +174,9 @@ function stay(elements: Elements) {
 	else if (yourSum < dealerSum) message = "You lose!";
 	else message = "Invalid Result!";
 
-	dealerSumText.innerText = dealerSum.toString();
-	yourSumText.innerText = yourSum.toString();
 	resultsText.innerText = message;
 
 	console.log("------- Open for debuging purposes! ------");
 	console.log(`Dealer's sum: ${dealerSum}`);
 	console.log(`Your sum: ${yourSum}`);
-}
-
-function getValue(card: string) {
-	const data = card?.split("-");
-	const value = data[0];
-	if (isNaN(parseInt(value))) {
-		if (value === "A") return 11;
-		return 10;
-	}
-	return parseInt(value);
-}
-
-function checkAce(card: string) {
-	if (card[0] === "A") return 1;
-	return 0;
-}
-
-function reduceAce(playerSum: number, playerAceCount: number) {
-	while (playerSum > 21 && playerAceCount > 0) {
-		playerSum -= 10;
-		playerAceCount -= 1;
-	}
-	return playerSum;
 }
